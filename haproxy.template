@@ -21,10 +21,9 @@ defaults
     errorfile 502 /etc/haproxy/errors/502.http
     errorfile 503 /etc/haproxy/errors/503.http
     errorfile 504 /etc/haproxy/errors/504.http
-
-{{ range . }}
-listen {{ .Name }} 0.0.0.0:{{ .Port }}
+{{ range . }} {{ $name := .Name }} {{ $port := .Port }}
+listen {{ $name }} 0.0.0.0:{{ $port }}
     mode {{ .Proxy_type }}
-    balance roundrobin
-    server {{ .Name }} {{ .Host }}:{{ .Port}} check
+    balance roundrobin {{ range .Hosts }}
+    server {{ $name }} {{ . }}:{{ $port }} check {{ end }}
 {{ end }}
